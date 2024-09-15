@@ -1,0 +1,67 @@
+Nama	: Rio Ferdinan
+NIM	: 00000070666
+UAS IF351-IL
+
+mysql -u root -p myumn < myumn.sql
+
+Nomor 1
+SELECT j.jurusan AS Prodi, d.nama_dosen AS "Nama Dosen", mk.id_kelas AS "Kode Kelas",
+	k.nama_kelas AS "Nama Kelas", k.hari AS Hari, k.jadwal AS Jam, k.lokasi AS Ruang
+FROM dosen AS d
+JOIN mengajar AS mk ON (d.id_dosen = mk.id_dosen)
+JOIN kelas AS k ON (mk.id_kelas = k.id_kelas)
+JOIN krs AS krs ON (k.id_kelas = krs.id_kelas)
+JOIN mahasiswa AS j ON (krs.id_mahasiswa = j.id_mahasiswa)
+GROUP BY mk.id_kelas
+ORDER BY d.nama_dosen;
+
+Nomor 2
+CREATE VIEW view_nomor2 AS
+SELECT j.jurusan AS Prodi, d.nama_dosen AS "Nama Dosen", mk.id_kelas AS "Kode Kelas",
+	k.nama_kelas AS "Nama Kelas", k.hari AS Hari, k.jadwal AS Jam, k.lokasi AS Ruang
+FROM dosen AS d
+JOIN mengajar AS mk ON (d.id_dosen = mk.id_dosen)
+JOIN kelas AS k ON (mk.id_kelas = k.id_kelas)
+JOIN krs AS krs ON (k.id_kelas = krs.id_kelas)
+JOIN mahasiswa AS j ON (krs.id_mahasiswa = j.id_mahasiswa)
+GROUP BY mk.id_kelas
+ORDER BY d.nama_dosen;
+
+INSERT INTO dosen(nama_dosen, id_dosen) VALUE('Pak Lurah', '010001');
+
+CREATE USER 'paklurah'@'localhost'
+IDENTIFIED BY 'passpaklurah';
+
+GRANT SELECT
+ON view_nomor2
+TO 'paklurah'@'localhost';
+
+Nomor 3
+Tambahkan semester pada tabel mahasiswa
+ALTER TABLE mahasiswa
+ADD COLUMN semester INT;
+
+Tambahkan semester pada tabel kelas
+ALTER TABLE kelas
+ADD COLUMN semester INT;
+
+Tambahkan semester pada tabel krs
+ALTER TABLE krs
+ADD COLUMN semester INT;
+
+Nomor 4
+DELIMITER //
+
+CREATE PROCEDURE drop_student (IN del_nim CHAR(11))
+BEGIN
+DELETE FROM krs
+WHERE id_mahasiswa = del_nim;
+
+DELETE FROM skkm
+WHERE id_mahasiswa = del_nim;
+
+DELETE FROM mahasiswa
+WHERE id_mahasiswa = del_nim;
+END//
+
+DELIMITER ;

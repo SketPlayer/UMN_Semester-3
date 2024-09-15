@@ -1,0 +1,27 @@
+.kotak {
+    width: 100%;
+    padding: 44px;
+}
+
+.inputfill {
+    padding: 4px;
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+.inputfill2 {
+    padding: 10px;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.tombol {
+    width: 100%;
+}
+
+#captcha{
+    background-color: black;
+    font-weight: bold;
+    color: white;
+    width: 50%;
+}

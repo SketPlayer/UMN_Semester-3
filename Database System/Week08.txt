@@ -1,0 +1,74 @@
+SELECT CONCAT(a.FirstName,' ',a.LastName) AS 'Nama Karyawan', b.Salary AS Gaji
+FROM employees AS a, jobs as b
+WHERE a.JobID = b. JobID
+ORDER BY a.FirstName;
+
+
+SELECT a.ShelfID AS ShelfID
+FROM shelves AS a
+JOIN products AS b ON (a.ShelfID = b.ShelfID)
+GROUP BY a.ShelfID
+ORDER BY COUNT(b.ProductName)
+LIMIT 3;
+
+SELECT a.JobDesc AS Jobs, COUNT(b.JobID) AS Jumlah
+FROM jobs AS a
+JOIN employees AS b ON (a.JobID = b.JobID)
+GROUP BY b.JobID;
+
+SELECT a.ProductName AS Products
+FROM products AS a
+JOIN producttype AS b ON (a.TypeID = b.TypeID)
+WHERE b.TypeName LIKE 'METOD%'
+UNION
+SELECT 'Found 20 results' AS Products;
+
+SELECT CONCAT(a.FirstName,' ',a.LastName) AS Name
+FROM employees AS a
+JOIN jobs AS b ON (a.JobID = b.JobID)
+WHERE b.JobDesc LIKE 'Manager'
+AND a.DeptID IS NOT NULL
+ORDER BY Name;
+
+SELECT a.F_OrderID AS OrderID, b.Price AS "Total Price"
+FROM restaurant AS a
+JOIN forderdetails AS b ON (a.F_OrderID = b.F_OrderID)
+WHERE MONTH(a.F_OrderDate) = 1
+UNION ALL
+SELECT 'Total' AS OrderID, SUM(b.Price) AS "Total Price"
+FROM restaurant AS a
+JOIN forderdetails AS b ON (a.F_OrderID = b.F_OrderID)
+WHERE MONTH(a.F_OrderDate) = 1;
+
+SELECT CONCAT(a.FirstName,' ',a.LastName) AS Name, b.JobDesc as Job, COUNT(c.F_OrderID) AS Work
+FROM employees AS a
+JOIN jobs AS b ON (a.JobID = b.JobID)
+JOIN restaurant AS c ON (a.EmployeeID = c.EmployeeID)
+GROUP BY Name
+UNION
+SELECT CONCAT(a.FirstName,' ',a.LastName) AS Name, b.JobDesc as Job, COUNT(d.OrderID) AS Work
+FROM employees AS a
+JOIN jobs AS b ON (a.JobID = b.JobID)
+JOIN orders AS d ON (a.EmployeeID = d.EmployeeID)
+GROUP BY Name
+ORDER BY Work DESC;
+
+SELECT OrderID AS ID, SUM(Price) AS "Total Revenue"
+FROM orderdetails
+GROUP BY ID
+HAVING SUM(Price) > 500000
+UNION
+SELECT F_OrderID AS ID, SUM(Price) AS "Total Revenue"
+FROM forderdetails
+GROUP BY ID
+HAVING SUM(Price) > 500000;
+
+SELECT CONCAT(managers.FirstName, ' ', managers.LastName) AS Manager,
+GROUP_CONCAT(CONCAT(employees.FirstName, ' ', employees.LastName)) AS Employees
+FROM employees AS employees
+JOIN jobs AS employee_jobs ON employees.JobID = employee_jobs.JobID
+LEFT JOIN employees AS managers ON employees.ManagerID = managers.EmployeeID
+JOIN jobs AS manager_jobs ON managers.JobID = manager_jobs.JobID
+WHERE manager_jobs.JobID = 'J0010'
+GROUP BY Manager
+ORDER BY employees.ManagerID;

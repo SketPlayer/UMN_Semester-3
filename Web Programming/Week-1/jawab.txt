@@ -1,0 +1,16 @@
+1. Ganti function include menjadi require, jelaskan apa yang terjadi.
+2. Pelajari dan jelaskan perbedaan antara function include() dan include_once() serta require()
+dan require_once().
+
+Jawaban
+
+1. Dalam penggunaan function include, jika file tidak ditemukan maka PHP tetap menjalankan kode namun dengan peringatan.
+Namun, ketika menggunakan function require, jika file tidak ditemukan maka PHP akan error dan tidak dapat menjalankan kode.
+
+2. Fungsi include() digunakan untuk menyertakan file eksternal ke dalam skrip PHP Anda. Jika file tersebut tidak ditemukan, PHP akan menghasilkan peringatan (warning) tetapi tetap melanjutkan eksekusi kode berikutnya. Jika ada beberapa pernyataan include() yang mencoba menyertakan file yang sama, file tersebut akan disertakan berkali-kali jika tidak ada tindakan pencegahan tambahan.
+
+Fungsi include_once() hampir sama dengan include(), tetapi dengan tambahan perlindungan. Jika file sudah disertakan sebelumnya menggunakan include_once() atau require_once(), PHP tidak akan mencoba menyertakan file tersebut lagi. Dengan kata lain, file tersebut hanya akan disertakan satu kali selama eksekusi skrip.
+
+Fungsi require() digunakan untuk membutuhkan file eksternal ke dalam skrip PHP Anda. Jika file tersebut tidak ditemukan, PHP akan menghasilkan kesalahan fatal (fatal error) dan menghentikan eksekusi kode. Ini berarti bahwa jika file yang dibutuhkan tidak ada, skrip PHP Anda akan berhenti di situ.
+
+Fungsi require_once() mirip dengan require(), tetapi juga memiliki perlindungan seperti include_once(). Jika file sudah dibutuhkan sebelumnya menggunakan require_once() atau include_once(), PHP tidak akan mencoba membutuhkan file tersebut lagi. Ini memastikan bahwa file yang dibutuhkan hanya akan dimasukkan satu kali selama eksekusi skrip, dan jika file tersebut tidak ada, akan menghasilkan kesalahan fatal.

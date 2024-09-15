@@ -1,0 +1,128 @@
+Nomor 1
+DELIMITER //
+
+CREATE PROCEDURE diskon (IN discount INTEGER)
+BEGIN
+SELECT ProductName AS "Product Name",
+CONCAT('Rp. ', ROUND(Price-Price*discount/100)) AS "Harga Setelah Diskon"
+FROM products
+ORDER BY PRICE
+LIMIT 10;
+END//
+
+DELIMITER ;
+
+Nomor 2
+DELIMITER //
+
+CREATE PROCEDURE counting(IN input VARCHAR(100))
+BEGIN
+DECLARE total_kata INTEGER DEFAULT 0;
+DECLARE curr VARCHAR(1);
+DECLARE cekkata BOOLEAN DEFAULT FALSE;
+DECLARE i INTEGER DEFAULT 1;
+SET input = TRIM(input);
+WHILE i <= LENGTH(input) DO
+SET curr = SUBSTRING(input, i, 1);
+IF (curr REGEXP '[A-Za-z]') THEN
+IF (cekkata = FALSE) THEN
+SET cekkata = TRUE;
+SET total_kata = total_kata + 1;
+END IF;
+ELSE
+SET cekkata = FALSE;
+END IF;
+SET i = i + 1;
+END WHILE;
+SELECT total_kata AS "Total Kata";
+END//
+
+DELIMITER ;
+
+Nomor 3
+DELIMITER //
+
+CREATE PROCEDURE primecheck(IN input INTEGER)
+BEGIN
+DECLARE pembagi INTEGER DEFAULT 2;
+DECLARE is_prima BOOLEAN DEFAULT TRUE;
+
+IF input < 2 OR input >= 50 THEN
+SELECT 'Input di antara 2 sampai 49' AS Jawaban;
+ELSE
+WHILE pembagi <= SQRT(input) DO
+IF input % pembagi = 0 THEN
+SET is_prima = FALSE;
+END IF;
+SET pembagi = pembagi + 1;
+END WHILE;
+IF is_prima THEN
+SELECT 'Prima' AS Jawaban;
+ELSE
+SELECT 'Bukan Prima' AS Jawaban;
+END IF;
+
+END IF;
+END //
+
+DELIMITER ;
+
+Nomor 4
+
+DELIMITER //
+
+CREATE PROCEDURE box(IN X INTEGER, IN Y INTEGER)
+BEGIN
+DECLARE row INTEGER DEFAULT 1;
+DECLARE box_length INTEGER;
+DECLARE box_width INTEGER;
+DECLARE rowcount INTEGER;
+DECLARE boxcount INTEGER DEFAULT 0;
+DECLARE i INTEGER DEFAULT 0;
+DECLARE output VARCHAR(255) DEFAULT '';
+DECLARE output2 VARCHAR(255) DEFAULT '';
+
+SET rowcount = (X*Y)-1;
+SET box_length = Y+1;
+SET box_width = Y;
+
+CREATE TEMPORARY TABLE IF NOT EXISTS temp_table (Box VARCHAR(255));
+
+WHILE row <= rowcount DO
+	IF (row = 1) OR (row = box_width*i) OR (row = rowcount) THEN
+	REPEAT
+		SET output = CONCAT(output,'+');
+		SET output2 = RPAD(output2,box_length-1,'-');
+		SET output = CONCAT(output, output2);
+		SET boxcount = boxcount + 1;
+	UNTIL boxcount = X
+	END REPEAT;
+	SET output = CONCAT(output,'+');
+	INSERT INTO temp_table VALUES (output);
+	SET output = '';
+	SET output2 = '';
+	SET boxcount = 0;
+	SET row = row + 1;
+	SET i = i + 1;
+
+	ELSE
+	REPEAT
+		SET output = CONCAT(output,'|');
+		SET output2 = RPAD(output2,box_length-1,' ');
+		SET output = CONCAT(output, output2);
+		SET boxcount = boxcount + 1;
+	UNTIL boxcount = X
+	END REPEAT;
+	SET output = CONCAT(output,'|');
+	INSERT INTO temp_table VALUES (output);
+	SET output = '';
+	SET output2 = '';
+	SET boxcount = 0;
+	SET row = row + 1;
+	END IF;
+END WHILE;
+SELECT * FROM temp_table;
+DROP TEMPORARY TABLE IF EXISTS temp_table;
+END//
+
+DELIMITER ;

@@ -1,0 +1,78 @@
+SELECT CONCAT(a.FirstName, ' ', a.LastName) AS Name, b.DeptName AS Department
+FROM employees AS a
+JOIN depts AS b ON (a.DeptID = b.DeptID)
+ORDER BY b.DeptName, Name;
+
+SELECT CONCAT(employee.FirstName, ' ', employee.LastName) AS "Employee Name",
+CONCAT(manager.FirstName, ' ', manager.LastName) AS "Manager Name"
+FROM employees AS employee
+RIGHT JOIN employees AS manager ON (employee.ManagerID = manager.EmployeeID)
+JOIN jobs AS manager_jobs ON (manager.JobID = manager_jobs.JobID)
+WHERE manager_jobs.JobID = 'J0010'
+ORDER BY 2, 1;
+
+SELECT CONCAT(a.FirstName, ' ', a.LastName) AS Name,
+GROUP_CONCAT(b.OrderID SEPARATOR ' - ') AS Orders
+FROM employees AS a
+JOIN orders AS b ON (a.EmployeeID = b.EmployeeID)
+GROUP BY Name
+ORDER BY Name;
+
+SELECT a.ProductName AS "Product Name", SUM(b.Qty) AS "Total Sold"
+FROM products AS a
+JOIN orderdetails AS b ON (a.ArticleID = b.ArticleID)
+GROUP BY a.ProductName
+ORDER BY 2 DESC;
+
+SELECT a.ProductName AS "Product Name", COALESCE(SUM(b.Qty), 0) AS "Total Sold"
+FROM products AS a
+LEFT JOIN orderdetails AS b ON (a.ArticleID = b.ArticleID)
+GROUP BY a.ProductName
+ORDER BY 2 DESC;
+
+SELECT a.OrderID AS "Order ID", SUM(a.Price) AS Total,
+CONCAT(b.FirstName, ' ', b.LastName) AS "In Charge"
+FROM orderdetails AS a
+JOIN orders AS c ON (a.OrderID = c.OrderID)
+JOIN employees AS b ON (c.EmployeeID = b.EmployeeID)
+GROUP BY a.OrderID
+ORDER BY 3;
+
+SELECT CONCAT(a.FirstName, ' ', a.LastName) AS Employee,
+ROUND(SUM(b.Price)*0.12) AS Contribution, ROUND(c.Salary*0.05) AS Bonus
+FROM employees AS a
+JOIN orders AS orders ON (a.EmployeeID = orders.EmployeeID)
+JOIN orderdetails AS b ON (orders.OrderID = b.OrderID)
+JOIN jobs AS c ON (a.JobID = c.JobID)
+GROUP BY Employee
+HAVING SUM(b.Price)*0.12 > 500000
+ORDER BY 2 DESC;
+
+SELECT CONCAT(
+  RPAD(CONCAT(emp.FirstName, ' ', emp.LastName), 30, ' '),
+  RPAD(
+   (CASE
+    WHEN job.JobDesc LIKE 'Restaurant%' THEN CONCAT('works in a  ', job.JobDesc)
+    WHEN SUBSTRING(job.JobDesc, 1, 1) IN ('A', 'I', 'U', 'E', 'O') THEN CONCAT('works as an ', job.JobDesc)
+    ELSE CONCAT('works as a  ', job.JobDesc)
+   END), 50 , ' '
+  ), ' in ', dept.DeptName, ' Department'
+) AS "Employee Information"
+FROM employees AS emp
+JOIN jobs AS job ON (emp.JobID = job.JobID)
+JOIN depts AS dept ON (emp.DeptID = dept.DeptID)
+ORDER BY job.Jobdesc, dept.DeptName, CONCAT(emp.FirstName, ' ', emp.LastName);
+
+SET @@AUTOCOMMIT = 0;
+
+UPDATE jobs
+SET Salary = 0;
+
+SAVEPOINT ikea_gaji_nol;
+
+UPDATE employees
+SET FirstName = 'Tommy';
+
+ROLLBACK TO SAVEPOINT ikea_gaji_nol;
+
+ROLLBACK;

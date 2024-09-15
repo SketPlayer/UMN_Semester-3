@@ -1,0 +1,130 @@
+mysql -h localhost -u root
+
+CREATE DATABASE Company;
+USE company;
+
+CREATE TABLE location(
+location_id CHAR(5) PRIMARY KEY,
+address CHAR(100) NOT NULL,
+postal_code CHAR(5) NOT NULL,
+city CHAR(20) NOT NULL
+)engine=InnoDB;
+
+CREATE TABLE job(
+job_id CHAR(5) PRIMARY KEY,
+job_title CHAR(30) NOT NULL,
+min_salary INT(10) NOT NULL,
+max_salary INT(10) NOT NULL
+)engine=InnoDB;
+
+CREATE TABLE department(
+department_id CHAR(5) PRIMARY KEY,
+department_name CHAR(30) NOT NULL,
+manager_id CHAR(5) NOT NULL,
+location_id CHAR(5) NOT NULL,
+FOREIGN KEY(location_id) REFERENCES location(location_id)
+)engine=InnoDB;
+
+CREATE TABLE employee(
+employee_id CHAR(5) PRIMARY KEY,
+first_name CHAR(15) NOT NULL,
+last_name CHAR(15),
+birth_date DATE NOT NULL,
+email CHAR(50) NOT NULL,
+phone_number CHAR(12) NOT NULL,
+hire_date DATE NOT NULL,
+salary INT(10) NOT NULL,
+job_id CHAR(5) NOT NULL,
+department_id CHAR(5),
+FOREIGN KEY(job_id) REFERENCES job(job_id),
+FOREIGN KEY(department_id) REFERENCES department(department_id)
+)engine=InnoDB;
+
+INSERT INTO location
+VALUES	('L0001','Grand Indonesia Lt.9, Jalan M.H. Thamrin NO 1, Jakarta Pusat','10310','Jakarta'),
+	('L0002','Pacific Place Lt. 7, Jalan Jenderal Sudirman Kav. 52-53, Jakarta Selatan','12190','Jakarta');
+
+INSERT INTO job
+VALUES	('J0001','President','10000000','15000000'),
+	('J0002','Accountant','3000000','4500000'),
+	('J0003','Accounting Manager','5000000','7000000'),
+	('J0004','IT Support','3500000','5000000'),
+	('J0005','Programmer','4000000','5500000'),
+	('J0006','Marketing Manager','6000000','8000000'),
+	('J0007','Marketing Representative','4500000','5500000'),
+	('J0008','HR Manager','5000000','6500000'),
+	('J0009','HR Representative','3500000','4500000');
+
+INSERT INTO department
+VALUES	('D0001','Accounting','E0002','L0002'),
+	('D0002','IT','E0004','L0001'),
+	('D0003','Human Resource','E0005','L0001'),
+	('D0004','Marketing','E0010','L0002');
+
+INSERT INTO employee
+VALUES ('E0001', 'Hideyoshi', 'Kinoshita', '1975-08-24', 'Hideyoshi.kino@gmail.com', '081689231099', '2002-01-11', 5000000, 'J0004', 'D0002'),
+('E0002', 'Sara', NULL, '1970-01-11', 'Sara@rocketmail.com', '089281849321', '2000-12-10', 5500000, 'J0003', 'D0001'),
+('E0003', 'Kazuyoshi', NULL, '1968-02-28', 'Kazuyoshi@gmail.com', '085252778438', '1999-07-25', 4500000, 'J0009', 'D0003'),
+('E0004', 'Shoichiro', 'Yukimura', '1967-02-01', 'Shoichiro.yuki@yahoo.com', '089928317822', '2000-04-17', 4500000, 'J0005', 'D0002'),
+('E0005', 'Chibi', 'Usa', '1950-06-30', 'Chibi.usa@gmail.com', '081329883547', '2001-08-10', 5000000, 'J0008', 'D0003'),
+('E0006', 'Yoshika', 'Saehara', '1977-10-21', 'Yoshika.sae@yahoo.com', '081299284628', '2005-11-18', 4500000, 'J0008', 'D0003'),
+('E0007', 'Kagami', 'Mikage', '1970-10-08', 'Kagami.mikage@rocketmail.com', '089628371298', '2002-05-15', 12500000, 'J0001', NULL),
+('E0008', 'Reiko', 'Shindo', '1948-11-14', 'Reiko.shindo@live.com', '085290802938', '2002-09-01', 3500000, 'J0004', 'D0002'),
+('E0009', 'Youko', 'Kuriki', '1970-03-19', 'Youko.kuriki@hotmail.com', '089922781924', '2007-04-08', 5500000, 'J0002', 'D0001'),
+('E0010', 'Mana', 'Ichihashi', '1976-11-21', 'Mana.ichihashi@gmail.com', '087888291322', '2003-11-20', 6000000, 'J0006', 'D0004'),
+('E0011', 'Kyoko', 'Aoi', '1965-09-30', 'Kyoko.aoi@gmail.com', '081290208851', '2005-05-13', 8000000, 'J0009', 'D0003');
+
+
+UPDATE employee
+SET first_name = 'Pedo',
+last_name = 'Bear',
+email = 'pedo.bear@gmail.com'
+WHERE employee_id = 'E0005';
+
+UPDATE employee
+SET salary = salary - 100000;
+
+UPDATE employee
+SET department_id = 'D0002',
+job_id = 'J0005'
+WHERE employee_id = 'E0002';
+
+UPDATE employee
+SET department_id = 'D0001',
+job_id = 'J0003'
+WHERE employee_id = 'E0004';
+
+DELETE
+FROM employee
+WHERE employee_id = 'E0004';
+
+INSERT INTO employee
+VALUES	('E0012','Usui','Takumi','1982-04-27','Usui.takumi@gmail.com','085309009211','2023-09-25','4500000','J0007','D0004');
+
+UPDATE employee
+SET salary = salary + 200000
+WHERE employee_id = 'E0012';
+
+UPDATE employee
+SET salary = salary * 1.10
+WHERE 
+(MONTH(birth_date) = 11)
+OR
+(DATEDIFF('2017-12-10', birth_date) >= 18250);
+
+
+DROP TABLE employee;
+
+DROP TABLE department;
+
+DROP TABLE job;
+
+DROP TABLE location;
+
+DROP DATABASE Company;
+
+Bagaimana jika kolom manager_id pada tabel department merupakan foreign key yang 
+menunjuk kolom employee_id pada tabel employee?
+
+Jawab:
+Untuk membuat tabel department tersebut harus membutuhkan tabel employee terlebih dahulu, jika tidak maka akan terjadi error, namun tabel employee membutuhkan tabel department agar tidak terjadi error karena adanya foreign key yang mereferensikan table department. Maka dari itu hal ini tidak dapat dilakukan, kecuali adanya cara lain untuk menjadikan manager_id menjadi foreign key yang mereferensikan employee_id pada tabel employee tanpa terjadi error dalam urutan CREATE TABLE.

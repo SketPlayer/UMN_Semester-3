@@ -1,0 +1,101 @@
+Query nomor 1
+
+CREATE TABLE calon(
+ID_Calon CHAR(5) PRIMARY KEY,
+Nama_Calon VARCHAR(25) NOT NULL
+)engine=InnoDB;
+
+CREATE TABLE pemilih(
+ID_Pemilih CHAR(5) PRIMARY KEY,
+Nama_Pemilih VARCHAR(25) NOT NULL,
+Nomor_Telepon_Penduduk VARCHAR(10) NOT NULL
+)engine=InnoDB;
+
+CREATE TABLE pemilihan(
+ID_Pemilih CHAR(5),
+ID_Calon CHAR(5),
+PRIMARY KEY (ID_Pemilih, ID_Calon),
+FOREIGN KEY (ID_Pemilih) REFERENCES pemilih(ID_Pemilih),
+FOREIGN KEY (ID_Calon) REFERENCES calon(ID_Calon)
+)engine=InnoDB;
+
+INSERT INTO calon
+VALUES
+('PR001','Dennis Wicaksana'),
+('PR002','Arya Gunawan');
+
+INSERT INTO pemilih
+VALUES
+('PD001','Anna','2031203'),
+('PD002','Sukijah','2301223'),
+('PD003','Kana','2334059'),
+('PD004','Kiri','2033012'),
+('PD005','Okta','9332333');
+
+INSERT INTO pemilihan
+VALUES
+('PD001','PR001'),
+('PD002','PR001'),
+('PD003','PR002'),
+('PD004','PR001'),
+('PD005','PR002');
+
+Query Nomor 2
+
+CREATE TABLE jenismenu(
+NamaMenu VARCHAR(25) PRIMARY KEY,
+Kategori VARCHAR(20) NOT NULL
+)engine=InnoDB;
+
+CREATE TABLE menu(
+IDMenu CHAR(5) PRIMARY KEY,
+NamaMenu VARCHAR(25) NOT NULL,
+Harga INTEGER NOT NULL,
+FOREIGN KEY (NamaMenu) REFERENCES jenismenu(NamaMenu)
+)engine=InnoDB;
+
+CREATE TABLE orders(
+IDOrder CHAR(5) PRIMARY KEY,
+NomorMeja INTEGER NOT NULL,
+JamMasuk CHAR(5) NOT NULL,
+JamKeluar CHAR(5) NOT NULL
+)engine=InnoDB;
+
+CREATE TABLE order_details(
+IDOrder CHAR(5),
+IDMenu CHAR(5),
+PRIMARY KEY (IDOrder, IDMenu),
+FOREIGN KEY (IDOrder) REFERENCES orders(IDOrder),
+FOREIGN KEY (IDMenu) REFERENCES menu(IDMenu)
+)engine=InnoDB;
+
+INSERT INTO jenismenu
+VALUES
+('Nasi Putih','Makanan Pokok'),
+('Tahu Goreng','Lauk'),
+('Ayam Goreng','Lauk'),
+('Air Mineral','Minuman');
+
+INSERT INTO menu
+VALUES
+('MN001','Nasi Putih',5000),
+('MN002','Tahu Goreng',4000),
+('MN003','Air Mineral',3000),
+('MN004','Ayam Goreng',15000);
+
+INSERT INTO orders
+VALUES
+('OD001',1,'10:00','11:00'),
+('OD002',2,'11:00','13:00'),
+('OD003',1,'15:00','15:30'),
+('OD004',1,'15:00','15:30');
+
+INSERT INTO order_details
+VALUES
+('OD001','MN001'),
+('OD001','MN002'),
+('OD001','MN003'),
+('OD002','MN001'),
+('OD002','MN004'),
+('OD003','MN002'),
+('OD004','MN004');

@@ -1,0 +1,17 @@
+CREATE DATABASE data_mahasiswa;
+
+USE data_mahasiswa;
+
+CREATE TABLE mahasiswa(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nim VARCHAR(11) UNIQUE NOT NULL,
+    nama VARCHAR(50) NOT NULL,
+    prodi VARCHAR(25) NOT NULL,
+    foto BLOB NOT NULL
+)engine=InnoDB;
+
+CREATE TABLE admin(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(100) NOT NULL
+)engine=InnoDB;

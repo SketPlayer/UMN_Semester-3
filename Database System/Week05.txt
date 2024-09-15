@@ -1,0 +1,155 @@
+mysql -h localhost -u root
+
+CREATE DATABASE Restoran;
+
+USE Restoran;
+
+CREATE TABLE Employee(
+id_employee varchar(5) PRIMARY KEY,
+nama_depan varchar(30) NOT NULL,
+nama_belakang varchar(30),
+jabatan varchar(30) NOT NULL,
+alamat varchar(30) NOT NULL,
+email varchar(30) NOT NULL,
+nomor_telepon varchar(15) NOT NULL,
+gaji int NOT NULL
+)engine=InnoDB;
+
+CREATE TABLE Customer(
+id_customer varchar(5) PRIMARY KEY,
+nama_depan varchar(30) NOT NULL,
+nama_belakang varchar(30),
+alamat varchar(30) NOT NULL,
+email varchar(30) NOT NULL,
+nomor_telepon varchar(15) NOT NULL
+)engine=InnoDB;
+
+CREATE TABLE Paket(
+id_paket varchar(5) PRIMARY KEY,
+harga_paket int NOT NULL
+)engine=InnoDB;
+
+CREATE TABLE Menu(
+id_menu varchar(5) PRIMARY KEY,
+nama_menu varchar(30) NOT NULL,
+jenis_menu varchar(20) NOT NULL,
+id_paket varchar(5) NOT NULL,
+FOREIGN KEY(id_paket) REFERENCES Paket(id_paket)
+)engine=InnoDB;
+
+CREATE TABLE Transaction(
+id_customer varchar(5),
+id_paket varchar(5),
+id_employee varchar(5),
+transaction_date DATE NOT NULL,
+PRIMARY KEY(id_customer, id_paket, id_employee),
+FOREIGN KEY(id_customer) REFERENCES Customer(id_customer),
+FOREIGN KEY(id_paket) REFERENCES Paket(id_paket),
+FOREIGN KEY(id_employee) REFERENCES Employee(id_employee)
+)engine=InnoDB;
+
+INSERT INTO employee
+VALUES
+('E0001','Anthony',NULL,'Manager','70 Cool Guy','anthony@umn.ac.id','123-456-4565','5000000'),
+('E0002','Akino','Archilles','Chef','21 Kino Kino','akino@student.com','354-124-5786','3500000'),
+('E0003','Kevin','Alexander','Cashier','34 Nishinoya','alex@yahoo.com','098-123-7832','3000000'),
+('E0004','Ivy','Marcia','Chef','06 Wall Street','ivy@yahoo.com','846-732-8427','3500000'),
+('E0005','Martha','Saphia','Customer Service','78 Ruby Fort','martha@umn.ac.id','718-298-2873','3200000'),
+('E0006','Nofiandy',NULL,'Cashier','03 Smooth Hair','nofiandy@gmail.com','516-927-9268','3250000'),
+('E0007','Octavany',NULL,'Cashier','23 Relaxing Cafe','octa@iseng.com','654-876-1928','3150000');
+
+INSERT INTO customer
+VALUES
+('C0001','Michael','Oswin','125 Laugh Land','oswin@yahoo.com','745-387-2874'),
+('C0002','Anna','Jeane','163 Lolita Land','anna@gmail.com','982-397-4862'),
+('C0003','Raymond',NULL,'287 Chucky Suburb','raymond@gmail.com','917-376-4672'),
+('C0004','Theodore','Mulia','287 Idea Annex','mulia@gmail.com','122-187-1111'),
+('C0005','Niki','Emersan','297 Cult Annex','niki@yahoo.com','198-292-2223'),
+('C0006','Christine','Liviani','275 Love Annex','liviani@live.com','000-198-2836'),
+('C0007','Hermawan',NULL,'212 Tall Building','hermawan@yahoo.com','192-168-1001'),
+('C0008','Agung',NULL,'293 Short Building','agung@yahoo.com','192-168-1993'),
+('C0009','Samuel','Sandro','206 Oppa Annex','sam@live.com','192-168-2973'),
+('C0010','Kennard','Alcander','202 Brother Annex','ken@live.com','198-782-3864');
+
+INSERT INTO paket
+VALUES
+('P0001','3000000'),
+('P0002','2500000'),
+('P0003','2000000');
+
+INSERT INTO menu
+VALUES
+('M0001','Nasi Goreng Cinta','Makanan','P0001'),
+('M0002','Ayam Bumbu PHP','Makanan','P0002'),
+('M0003','Soto Daging CPP','Makanan','P0003'),
+('M0004','Siomay Pak BoBi','Makanan','P0001'),
+('M0005','Blue Integer','Minuman','P0001'),
+('M0006','Mocha Float','Dessert','P0003'),
+('M0007','Choco Banana Split','Dessert','P0002'),
+('M0008','Es Teh Panas','Minuman','P0002'),
+('M0009','Nasi Micin','Makanan','P0002'),
+('M0010','Sapi Chabe','Makanan','P0003');
+
+INSERT INTO transaction(id_customer, id_employee, id_paket, transaction_date)
+VALUES
+('C0001','E0002','P0003','2016-02-25'),
+('C0002','E0001','P0002','2016-03-12'),
+('C0003','E0002','P0002','2016-04-10'),
+('C0004','E0004','P0001','2016-06-28'),
+('C0005','E0001','P0002','2016-03-30'),
+('C0006','E0003','P0003','2016-03-10'),
+('C0007','E0005','P0001','2016-03-01'),
+('C0008','E0002','P0002','2016-08-30'),
+('C0009','E0002','P0003','2016-11-02'),
+('C0010','E0005','P0001','2016-08-18');
+
+SELECT * FROM menu;
+
+SELECT nama_depan AS "Nama Depan", nama_belakang AS "Nama Belakang"
+FROM employee
+WHERE jabatan = "Cashier";
+
+SELECT id_paket AS "ID Paket",
+harga_paket AS "Harga Awal",
+TRUNCATE(harga_paket*0.7,0) AS "Harga Akhir"
+FROM paket;
+
+SELECT CONCAT('Rp. ', SUM(gaji)) AS "Total Gaji"
+FROM employee;
+
+SELECT nama_depan AS "Nama Depan", nama_belakang AS "Nama Belakang",
+jabatan AS "Jabatan", email AS "Email"
+FROM employee
+WHERE email LIKE '%yahoo.com';
+
+SELECT nama_depan AS "Nama Depan", nama_belakang AS "Nama Belakang",
+jabatan AS "Jabatan", gaji AS "Gaji"
+FROM employee
+WHERE gaji < 3800000;
+
+SELECT nama_depan AS "Nama Depan", nama_belakang AS "Nama Belakang",
+CONCAT(LOWER(nama_depan),"@restoswin.rs.id") AS "Email Khusus"
+FROM employee;
+
+SELECT CONCAT(
+LEFT(nama_depan,4), TRIM(
+SUBSTRING(alamat,LOCATE(' ',alamat,1),
+LOCATE(' ',alamat,LOCATE(' ',alamat,1)+1) - LOCATE(' ',alamat,1))
+)) AS "Nama Gabungan"
+FROM customer
+WHERE nomor_telepon LIKE '%-1__-%'
+OR nomor_telepon LIKE '%-__7-%';
+
+SELECT TRIM(CONCAT(
+CONCAT(LEFT(LOWER(nama_menu),2),RIGHT(LOWER(nama_menu),3)),
+REVERSE(CONCAT(LEFT(LOWER(nama_menu),2),RIGHT(LOWER(nama_menu),3)))
+)) AS "Hashing"
+FROM menu
+WHERE jenis_menu = "Makanan";
+
+SELECT CONCAT(nama_depan,' ',nama_belakang) AS "Nama",
+CONCAT(
+LPAD('',(gaji/200000),'$'),LPAD('',((gaji%200000)/10000),'#')
+) AS Gaji
+FROM employee
+WHERE nama_belakang IS NOT NULL;

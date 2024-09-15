@@ -1,0 +1,9 @@
+---- Untuk Ubah Role Dari Tabel User jadi Admin ----
+
+UPDATE user
+SET role = 'admin'
+WHERE email = '?';
+
+----------------------------------------------------
+
+ubah email yang mau dijadikan admin

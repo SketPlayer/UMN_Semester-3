@@ -1,0 +1,12 @@
+{
+    "name": "riohu/04_spreadsheet",
+    "description": "Spreadsheet",
+    "autoload": {
+        "psr-4": {
+            "Riohu\\04Spreadsheet\\": "src/"
+        }
+    },
+    "require": {
+        "phpoffice/phpspreadsheet": "^1.29"
+    }
+}

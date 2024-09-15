@@ -1,0 +1,101 @@
+CREATE VIEW service_and_total AS
+SELECT a.OrderID AS "Order ID", DATE_FORMAT(a.OrderDate, '%e %M %Y') AS Date,
+serv.ServiceDesc AS "Service Type", serv.Price AS Service,
+SUM(ordet.Price*ordet.Qty) + serv.Price*COUNT(ordet.OrderID) AS Total
+FROM orders AS a
+JOIN servicedetails AS servdet ON (a.OrderID = servdet.OrderID)
+JOIN services AS serv ON (servdet.ServiceID = serv.ServiceID)
+JOIN orderdetails AS ordet ON (a.OrderID = ordet.OrderID)
+GROUP BY a.OrderID
+ORDER BY 1;
+
+CREATE VIEW sales_by_year_month AS
+SELECT YEAR(a.OrderDate) AS Year, MONTHNAME(a.OrderDate) AS Month,
+COUNT(b.OrderID) AS "Jumlah Transaksi",
+CONCAT('Rp. ', SUM(b.Price*b.Qty), ',-') AS Sales
+FROM orders AS a
+JOIN orderdetails AS b ON (a.OrderID = b.OrderID)
+GROUP BY MONTH(a.OrderDate);
+
+CREATE VIEW employees_salary AS
+SELECT a.EmployeeID AS ID,
+CONCAT(a.FirstName,' ',a.LastName) AS "Nama Karyawan",
+b.JobDesc AS Job, b.Salary AS Gaji
+FROM employees AS a, jobs as b
+WHERE a.JobID = b. JobID
+ORDER BY a.FirstName;
+
+CREATE VIEW food_sales AS
+SELECT a.F_OrderID AS ID, DATE_FORMAT(b.F_OrderDate, '%e %M %Y') AS Date,
+CONCAT(c.FirstName,' ',c.LastName) AS "Employee Name",
+prod.ProductName AS "Order Food", prod.Price AS Price,
+a.Qty AS Quantity, a.Price AS Total
+FROM forderdetails AS a
+JOIN restaurant AS b ON (a.F_OrderID = b.F_OrderID)
+JOIN employees AS c ON (b.EmployeeID = c.EmployeeID)
+JOIN products AS prod ON (a.ArticleID = prod.ArticleID)
+ORDER BY 1;
+
+CREATE USER 'Aldwin'@'localhost' IDENTIFIED BY 'aldsetiawan';
+CREATE USER 'Hansen'@'localhost' IDENTIFIED BY 'hnsedrick';
+CREATE USER 'Reza'@'localhost' IDENTIFIED BY 'rzasatyawijaya';
+CREATE USER 'Sintya'@'localhost' IDENTIFIED BY 'styoktaviani';
+
+GRANT SELECT
+ON sales_by_year_month
+TO 'Aldwin'@'localhost'
+WITH GRANT OPTION;
+
+GRANT SELECT
+ON food_sales
+TO 'Aldwin'@'localhost'
+WITH GRANT OPTION;
+
+GRANT SELECT
+ON employees_salary
+TO 'Hansen'@'localhost';
+
+GRANT SELECT
+ON service_and_total
+TO 'Reza'@'localhost';
+
+User: 'Aldwin'@'localhost'
+GRANT SELECT
+ON food_sales
+TO 'Sintya'@'localhost';
+
+SELECT Year AS Year, SUM(`Jumlah Transaksi`) AS "Total Transaksi",
+CONCAT('Rp. ',
+SUM(CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(Sales, 'Rp. ', -1), ',-', 1) AS INTEGER)),
+',-')
+AS "Pendapatan Bruto"
+FROM sales_by_year_month
+GROUP BY Year;
+
+User: 'Sintya'@'localhost'
+SELECT `Order Food` AS Food, CONCAT('Rp. ', SUM(Total), ',-') AS Sales
+FROM food_sales
+GROUP BY `Order Food`
+ORDER BY Total;
+
+User: 'Hansen'@'localhost'
+SELECT `Nama Karyawan` AS "Employee Name", Job AS Job, Gaji AS Salary
+FROM employees_salary
+ORDER BY Gaji DESC
+LIMIT 4;
+
+User: 'Reza'@'localhost'
+SELECT CONCAT('Rp. ', SUM(Service), ',-') AS "Total Pendapatan dari Delivery Service"
+FROM service_and_total
+WHERE `Service Type` LIKE '%Delivery%';
+
+User: Root
+DROP USER 'Aldwin'@'localhost';
+DROP USER 'Hansen'@'localhost';
+DROP USER 'Reza'@'localhost';
+DROP USER 'Sintya'@'localhost';
+
+DROP VIEW service_and_total;
+DROP VIEW sales_by_year_month;
+DROP VIEW employees_salary;
+DROP VIEW food_sales;

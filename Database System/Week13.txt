@@ -1,0 +1,95 @@
+Nomor 1
+DELIMITER //
+
+CREATE PROCEDURE search_product(IN keyword VARCHAR(20))
+BEGIN
+DECLARE insertion VARCHAR(100);
+DECLARE number_found, search_counter INTEGER;
+DECLARE c_search CURSOR FOR
+	SELECT ProductName FROM products
+	WHERE ProductName LIKE CONCAT('%', keyword, '%')
+	ORDER BY ProductName;
+OPEN c_search;
+CREATE TEMPORARY TABLE IF NOT EXISTS temp_table(result VARCHAR(255));
+SELECT COUNT(*) INTO number_found FROM products
+	WHERE ProductName LIKE CONCAT('%', keyword, '%');
+IF number_found = 0 THEN
+	INSERT INTO temp_table(result) VALUES('No Data Found');
+ELSE
+	INSERT INTO temp_table(result) VALUES(CONCAT(number_found, ' Data Found'));
+	INSERT INTO temp_table(result) VALUES('');
+	SET search_counter = 0;
+	WHILE search_counter < number_found DO
+		FETCH c_search INTO insertion;
+		INSERT INTO temp_table(result) VALUES(insertion);
+		SET search_counter = search_counter + 1;
+	END WHILE;
+END IF;
+CLOSE c_search;
+SELECT result AS "Search Result" FROM temp_table;
+DROP TEMPORARY TABLE IF EXISTS temp_table;
+END//
+
+DELIMITER ;
+
+Nomor 2
+DELIMITER //
+
+CREATE PROCEDURE search_people(IN find_id CHAR(5))
+BEGIN
+DECLARE name, findcity, poscode, pnum VARCHAR(100);
+DECLARE found INTEGER;
+
+CREATE TEMPORARY TABLE IF NOT EXISTS temp_table(result VARCHAR(255));
+SELECT COUNT(*) INTO found FROM employees
+	WHERE EmployeeID = find_id;
+IF found = 0 THEN
+	INSERT INTO temp_table(result) VALUES('ID Invalid! Please Try Again');
+ELSE
+	SELECT CONCAT(FirstName, ' ', LastName), City, PostalCode, PhoneNumber
+	INTO name, findcity, poscode, pnum
+	FROM employees WHERE EmployeeID = find_id;
+	INSERT INTO temp_table(result) VALUES('ID Found!');
+	INSERT INTO temp_table(result) VALUES(CONCAT('Employee ID  : ', find_id));
+	INSERT INTO temp_table(result) VALUES(CONCAT('Full Name    : ', name));
+	INSERT INTO temp_table(result) VALUES(CONCAT('City         : ', findcity));
+	INSERT INTO temp_table(result) VALUES(CONCAT('Postal Code  : ', poscode));
+	INSERT INTO temp_table(result) VALUES(CONCAT('Phone Number : ', pnum));
+END IF;
+SELECT result AS Result FROM temp_table;
+DROP TEMPORARY TABLE IF EXISTS temp_table;
+
+END//
+
+DELIMITER ;
+
+Nomor 3
+DELIMITER //
+
+CREATE FUNCTION email_special(fname VARCHAR(40), lname VARCHAR(40))
+RETURNS VARCHAR(100)
+BEGIN
+	RETURN LOWER(CONCAT(fname, '.', lname, '@ikeamail.com'));
+END//
+
+DELIMITER ;
+
+Nomor 4
+CREATE TABLE product_history(
+	articleid CHAR(11),
+	productname VARCHAR(50),
+	stock INT(11),
+	stock_changes INT(11),
+	update_date DATE
+);
+
+DELIMITER //
+
+CREATE TRIGGER changestock
+	AFTER UPDATE ON products FOR EACH ROW
+BEGIN
+	INSERT INTO product_history(articleid, productname, stock, stock_changes, update_date)
+	VALUES(OLD.articleid, OLD.productname, OLD.stock, (NEW.stock - OLD.stock), DATE(NOW()));
+END//
+
+DELIMITER ;
